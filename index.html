@@ -35,7 +35,7 @@
     </style>
 </head>
 <body>
-    <h1>Pneumococcal Vaccines</h1>
+    <h1>Pneumococcal Vaccines (Source: US CDC)</h1>
     <svg id="sankey"></svg>
 
     <script>
@@ -44,11 +44,10 @@
             { "vaccine_brand_name": "PCV7 (Prevnar)", "streptococcus_serotypes_covered": ["4", "6B", "9V", "14", "18C", "19F", "23F"], "produced_by": "Wyeth (acquired by Pfizer)" },
             { "vaccine_brand_name": "PCV10 (Synflorix)", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "GSK" },
             { "vaccine_brand_name": "PCV13 (Prevnar 13)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "19F", "23F"], "produced_by": "Pfizer" },
-            { "vaccine_brand_name": "Pneumovax 23 (PPSV23)", "streptococcus_serotypes_covered": ["1", "2", "3", "4", "5", "6A", "6B", "7F", "8", "9N", "9V", "10A", "11A", "12F", "14", "15B", "17F", "18C", "19F", "19A", "20", "22F", "23F", "33F"], "produced_by": "Merck & Co." },
-            { "vaccine_brand_name": "Vaxneuvance", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "19F", "23F"], "produced_by": "Merck & Co." },
-            { "vaccine_brand_name": "Prevnar 20 (PCV20)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "15B", "18C", "19A", "19F", "20", "23F"], "produced_by": "Pfizer" },
-            { "vaccine_brand_name": "Prevnar 21 (PCV21)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "15B", "18C", "19A", "19F", "20", "22F", "23F"], "produced_by": "Pfizer" },
-            { "vaccine_brand_name": "Synflorix", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "GSK" },
+            { "vaccine_brand_name": "Pneumovax 23 (PPSV23)", "streptococcus_serotypes_covered": ["1", "2", "3", "4", "5", "6B", "7F", "8", "9N", "9V", "10A", "11A", "12F", "14", "15B", "17F", "18C", "19F", "19A", "20", "22F", "23F", "33F"], "produced_by": "Merck & Co." },
+            { "vaccine_brand_name": "Vaxneuvance (PCV15)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "19F", "23F", "22F"], "produced_by": "Merck & Co." },
+            { "vaccine_brand_name": "Prevnar 20 (PCV20)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "15B", "18C", "19A", "19F", "23F", "22F", "33F", "8", "10A", "11A", "12F"], "produced_by": "Pfizer" },
+            { "vaccine_brand_name": "CAPVAXIVE (PCV21)", "streptococcus_serotypes_covered": ["3", "6A", "7F", "19A", "20", "22F", "33F", "8", "10A", "11A", "12F", "9N", "17F", "15A", "15C", "16F", "23A", "23B", "24F", "31", "35B"], "produced_by": "Merck & Co." },
             { "vaccine_brand_name": "Pneumosil (PCV10)", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "Sanofi" }
         ];
 
@@ -58,9 +57,9 @@
             "PCV10 (Synflorix)": "#E8A0B5",
             "PCV13 (Prevnar 13)": "#F4D03F",
             "Pneumovax 23 (PPSV23)": "#66B3A2",
-            "Vaxneuvance": "#F39C12",
+            "Vaxneuvance (PCV15)": "#F39C12",
             "Prevnar 20 (PCV20)": "#7D3C98",
-            "Prevnar 21 (PCV21)": "#28B463",
+            "CAPVAXIVE (PCV21)": "#28B463",
             "Synflorix": "#D4578C",
             "Pneumosil (PCV10)": "#F39C12"
         };
