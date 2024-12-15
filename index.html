@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three-Layer Sankey Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.8.4/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-sankey@0.12.1/dist/d3-sankey.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        svg {
+            width: 100%;
+            height: 1000px;
+            margin: 0 auto;
+        }
+        .node rect {
+            stroke-width: 1px;
+            fill-opacity: 0.9;
+        }
+        .link {
+            fill: none;
+            stroke-opacity: 0.5;
+        }
+        .node text {
+            font-size: 12px;
+            text-anchor: middle;
+        }
+        .highlighted {
+            stroke-width: 3px;
+            stroke: #000;
+            fill-opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pneumococcal Vaccines</h1>
+    <svg id="sankey"></svg>
+
+    <script>
+        // Dataset
+        const vaccinesData = [ 
+            { "vaccine_brand_name": "PCV7 (Prevnar)", "streptococcus_serotypes_covered": ["4", "6B", "9V", "14", "18C", "19F", "23F"], "produced_by": "Wyeth (acquired by Pfizer)" },
+            { "vaccine_brand_name": "PCV10 (Synflorix)", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "GSK" },
+            { "vaccine_brand_name": "PCV13 (Prevnar 13)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "19F", "23F"], "produced_by": "Pfizer" },
+            { "vaccine_brand_name": "Pneumovax 23 (PPSV23)", "streptococcus_serotypes_covered": ["1", "2", "3", "4", "5", "6A", "6B", "7F", "8", "9N", "9V", "10A", "11A", "12F", "14", "15B", "17F", "18C", "19F", "19A", "20", "22F", "23F", "33F"], "produced_by": "Merck & Co." },
+            { "vaccine_brand_name": "Vaxneuvance", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "19F", "23F"], "produced_by": "Merck & Co." },
+            { "vaccine_brand_name": "Prevnar 20 (PCV20)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "15B", "18C", "19A", "19F", "20", "23F"], "produced_by": "Pfizer" },
+            { "vaccine_brand_name": "Prevnar 21 (PCV21)", "streptococcus_serotypes_covered": ["1", "3", "4", "5", "6A", "6B", "7F", "9V", "14", "15B", "18C", "19A", "19F", "20", "22F", "23F"], "produced_by": "Pfizer" },
+            { "vaccine_brand_name": "Synflorix", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "GSK" },
+            { "vaccine_brand_name": "Pneumosil (PCV10)", "streptococcus_serotypes_covered": ["1", "5", "6A", "6B", "7F", "9V", "14", "18C", "19A", "23F"], "produced_by": "Sanofi" }
+        ];
+
+        // Define color scales for vaccine brands and producers
+        const vaccineColors = {
+            "PCV7 (Prevnar)": "#A1C4D9",
+            "PCV10 (Synflorix)": "#E8A0B5",
+            "PCV13 (Prevnar 13)": "#F4D03F",
+            "Pneumovax 23 (PPSV23)": "#66B3A2",
+            "Vaxneuvance": "#F39C12",
+            "Prevnar 20 (PCV20)": "#7D3C98",
+            "Prevnar 21 (PCV21)": "#28B463",
+            "Synflorix": "#D4578C",
+            "Pneumosil (PCV10)": "#F39C12"
+        };
+
+        const producerColors = {
+            "Wyeth (acquired by Pfizer)": "#A1C4D9",
+            "GSK": "#E8A0B5",
+            "Pfizer": "#F4D03F",
+            "Merck & Co.": "#66B3A2",
+            "Sanofi": "#F39C12"
+        };
+
+        const vaccineBrands = [];
+        const serotypes = new Set();
+        const producers = new Set();
+        const links = [];
+
+        vaccinesData.forEach(d => {
+            vaccineBrands.push(d.vaccine_brand_name);
+            d.streptococcus_serotypes_covered.forEach(serotype => serotypes.add(serotype));
+            producers.add(d.produced_by);
+
+            d.streptococcus_serotypes_covered.forEach(serotype => {
+                links.push({
+                    source: d.vaccine_brand_name,
+                    target: serotype,
+                    value: 1,
+                    color: vaccineColors[d.vaccine_brand_name],
+                    company: d.produced_by
+                });
+                links.push({
+                    source: serotype,
+                    target: d.produced_by,
+                    value: 1,
+                    color: producerColors[d.produced_by],
+                    company: d.produced_by
+                });
+            });
+        });
+
+        const vaccineNodes = vaccineBrands.map(name => ({ name }));
+        const serotypeNodes = Array.from(serotypes).map(name => ({ name }));
+        const producerNodes = Array.from(producers).map(name => ({ name }));
+        const nodes = vaccineNodes.concat(serotypeNodes, producerNodes);
+
+        const svg = d3.select("#sankey"),
+              width = 1000,
+              height = 800;
+
+        const sankey = d3.sankey()
+            .nodeWidth(30)
+            .nodePadding(10)
+            .size([width, height]);
+
+        nodes.forEach((node, i) => { node.index = i; });
+        links.forEach(link => {
+            link.source = nodes.find(n => n.name === link.source).index;
+            link.target = nodes.find(n => n.name === link.target).index;
+        });
+
+        const graph = { nodes: nodes, links: links };
+        sankey(graph);
+
+        const linkElements = svg.append("g")
+            .selectAll(".link")
+            .data(graph.links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", d3.sankeyLinkHorizontal())
+            .style("stroke-width", d => Math.max(1, d.width))
+            .style("stroke", d => d.color || "#000")
+            .style("fill", "none")
+            .style("opacity", 0.5);
+
+        const nodeElements = svg.append("g")
+            .selectAll(".node")
+            .data(graph.nodes)
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x0},${d.y0})`)
+            .each(function(d) {
+                d3.select(this).append("rect")
+                    .attr("height", d => d.y1 - d.y0)
+                    .attr("width", d.nodeWidth)
+                    .style("fill", "#ccc");
+
+                d3.select(this).append("text")
+                    .attr("x", 80)
+                    .attr("y", (d.y1 - d.y0) / 2)
+                    .attr("dy", "0.35em")
+                    .style("text-anchor", "left")
+                    .text(d.name)
+                    .on("mouseover", function(event, d) {
+                        // Highlight corresponding links
+                        linkElements.style("opacity", l => {
+                            console.log(l.company);
+                            // Only keep high opacity for links that are associated with the hovered node
+                            if (l.source.index === d.index || l.target.index === d.index || l.company === d.name) {
+                                return 1;
+                            }
+                            return 0.1; // Dim the others
+                        });
+                    })
+                    .on("mouseout", function(event, d) {
+                        // Reset opacity of all links when mouse leaves the node
+                        linkElements.style("opacity", 0.5);
+                    });
+            });
+
+        function highlightNode(index) {
+            const currentNode = nodes[index];
+            nodeElements.each(function(d) {
+                if (d.index === currentNode.index) {
+                    d3.select(this).select("rect")
+                        .classed("highlighted", true);
+                } else {
+                    d3.select(this).select("rect")
+                        .classed("highlighted", false);
+                }
+            });
+
+            linkElements.style("opacity", l => {
+                if (l.source.index === currentNode.index || l.target.index === currentNode.index || l.company === currentNode.name) {
+                    return 1;
+                }
+                return 0.1;
+            });
+        }
+
+        // Run animation for one round
+        let currentIndex = 0;
+
+        function nextNode() {
+            if (currentIndex < nodes.length) {
+                highlightNode(currentIndex);
+                currentIndex++;
+                setTimeout(nextNode, 300); // Wait 2 seconds before highlighting next node
+            } else {
+                // Reset opacity of all links once animation is complete
+                linkElements.style("opacity", 0.5);
+            }
+        }
+
+        nextNode(); // Start the animation
+    </script>
+</body>
+</html>
